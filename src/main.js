@@ -161,10 +161,10 @@ class LINE extends Command {
         this.command(`/join ${payload}`,this.joinQr.bind(this));
         this.command(`/spam ${payload}`,this.spamGroup.bind(this));
         this.command(`/creator`,this.creator.bind(this));
-
         this.command(`/pic ${payload}`,this.searchLocalImage.bind(this));
         this.command(`/upload ${payload}`,this.prepareUpload.bind(this));
         this.command(`/say ${payload}`,this.vn.bind(this));
+        this.command(`respon`, [`[A]ira`]);
 
         if(messages.contentType == 13) {
             messages.contentType = 0;
