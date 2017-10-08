@@ -142,7 +142,7 @@ class LINE extends Command {
         let sender = messages.from;
         
         this.command('apakah ', ['ya','tidak']);
-        this.command('kamu siapa', this.getProfile.bind(this));
+        this.command('/botid', this.getProfile.bind(this));
         this.command('/status', `Your Status: ${JSON.stringify(this.stateStatus)}`);
         this.command(`/left ${payload}`, this.leftGroupByName.bind(this));
         this.command('/speed', this.getSpeed.bind(this));
@@ -151,20 +151,20 @@ class LINE extends Command {
         this.command(`qr ${payload}`, this.OnOff.bind(this));
         this.command(`tes ${payload}`,this.kickAll.bind(this));
         this.command(`/cancel ${payload}`, this.cancelMember.bind(this));
-        this.command(`.set`,this.setReader.bind(this));
-        this.command(`.recheck`,this.rechecks.bind(this));
-        this.command(`.clearall`,this.clearall.bind(this));
+        this.command(`/point`,this.setReader.bind(this));
+        this.command(`/check`,this.rechecks.bind(this));
+        this.command(`/reset`,this.clearall.bind(this));
         this.command('.myid',`Your ID: ${messages.from}`)
-        this.command(`.ip ${payload}`,this.checkIP.bind(this))
-        this.command(`.ig ${payload}`,this.checkIG.bind(this))
-        this.command(`.qr ${payload}`,this.qrOpenClose.bind(this))
-        this.command(`.joinqr ${payload}`,this.joinQr.bind(this));
-        this.command(`.spam ${payload}`,this.spamGroup.bind(this));
-        this.command(`.creator`,this.creator.bind(this));
+        this.command(`/ip ${payload}`,this.checkIP.bind(this))
+        this.command(`/ig ${payload}`,this.checkIG.bind(this))
+        this.command(`/open ${payload}`,this.qrOpenClose.bind(this))
+        this.command(`/join ${payload}`,this.joinQr.bind(this));
+        this.command(`/spam ${payload}`,this.spamGroup.bind(this));
+        this.command(`/creator`,this.creator.bind(this));
 
-        this.command(`pap ${payload}`,this.searchLocalImage.bind(this));
-        this.command(`.upload ${payload}`,this.prepareUpload.bind(this));
-        this.command(`vn ${payload}`,this.vn.bind(this));
+        this.command(`/pic ${payload}`,this.searchLocalImage.bind(this));
+        this.command(`/upload ${payload}`,this.prepareUpload.bind(this));
+        this.command(`/say ${payload}`,this.vn.bind(this));
 
         if(messages.contentType == 13) {
             messages.contentType = 0;
