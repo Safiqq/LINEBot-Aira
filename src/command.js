@@ -223,7 +223,7 @@ class Command extends LineAPI {
     async qrOpenClose() {
         let updateGroup = await this._getGroup(this.messages.to);
         updateGroup.preventJoinByTicket = true;
-        if(typeof this.payload !== 'error.') {
+        if(typeof this.payload !== 'open/close error.') {
             let [ type ] = this.payload;
             if(type === 'open') {
                 updateGroup.preventJoinByTicket = false;
@@ -254,11 +254,11 @@ class Command extends LineAPI {
     checkIP() {
         exec(`wget ipinfo.io/${this.payload[0]} -qO -`,(err, res) => {
             if(err) {
-                this._sendMessage(this.messages,'error.');
+                this._sendMessage(this.messages,'ip1 error.');
                 return 
             }
             const result = JSON.parse(res);
-            if(typeof result.error == 'undefined') {
+            if(typeof result.error == 'ip2 error.') {
                 const { org, country, loc, city, region } = result;
                 try {
                     const [latitude, longitude ] = loc.split(',');
