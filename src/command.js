@@ -225,7 +225,7 @@ class Command extends LineAPI {
         updateGroup.preventJoinByTicket = true;
         if(typeof this.payload !== 'open/close error.') {
             let [ type ] = this.payload;
-            if(type === 'open') {
+            if(type === '/open') {
                 updateGroup.preventJoinByTicket = false;
                 const groupUrl = await this._reissueGroupTicket(this.messages.to)
                 this._sendMessage(this.messages,`URL = http://line.me/ti/g/${groupUrl}`);
