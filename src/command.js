@@ -10,7 +10,7 @@ class Command extends LineAPI {
     }
 
     get payload() {
-        if(typeof this.messages !== 'undefined'){
+        if(typeof this.messages !== 'payload error.'){
             return (this.messages.text !== null) ? this.messages.text.split(' ').splice(1) : '' ;
         }
         return false;
@@ -59,9 +59,9 @@ class Command extends LineAPI {
             const action = actions.toLowerCase();
             const state = status.toLowerCase() == 'on' ? 1 : 0;
             this.stateStatus[action] = state;
-            this._sendMessage(this.messages,`Status: \n${JSON.stringify(this.stateStatus)}`);
+            this._sendMessage(this.messages,`Status:\n${JSON.stringify(this.stateStatus)}`);
         } else {
-            this._sendMessage(this.messages,`You Are Not Admin`);
+            this._sendMessage(this.messages,`Kamu bukan admin.`);
         }
     }
 
@@ -127,9 +127,8 @@ class Command extends LineAPI {
 
     async getSpeed() {
         let curTime = Date.now() / 1000;
-        await this._sendMessage(this.messages, 'Read Time');
         const rtime = (Date.now() / 1000) - curTime;
-        await this._sendMessage(this.messages, `${rtime} Second`);
+        await this._sendMessage(this.messages, `${rtime} detik.`);
         return;
     }
 
@@ -149,13 +148,13 @@ class Command extends LineAPI {
     }
 
     setReader() {
-        this._sendMessage(this.messages, `Setpoint... type '.recheck' for lookup !`);
+        this._sendMessage(this.messages, `Read point telah di set!`);
         this.removeReaderByGroup(this.messages.to);
         return;
     }
 
     clearall() {
-        this._sendMessage(this.messages, `Reseted !`);
+        this._sendMessage(this.messages, `Read point telah di reset!`);
         this.checkReader = [];
         return
     }
@@ -166,8 +165,8 @@ class Command extends LineAPI {
             contentType: 13,
             contentPreview: null,
             contentMetadata: 
-            { mid: 'u236b88bf1eac2b90e848a6198152e647',
-            displayName: 'Alfath Dirk' }
+            { mid: 'u79c68416a26d7db88b9d44042dafd4f5',
+            displayName: 'Safiqq' }
         }
         Object.assign(this.messages,msg);
         this._sendMessage(this.messages);
@@ -189,7 +188,7 @@ class Command extends LineAPI {
             group: this.messages.to,
             sender: this.messages.from
         };
-        this._sendMessage(this.messages,`select pict/video for upload ${this.stateUpload.name}`);
+        this._sendMessage(this.messages,`Pilih gambar/video yang ingin diposting. ${this.stateUpload.name}`);
         return;
     }
     
@@ -197,7 +196,7 @@ class Command extends LineAPI {
         let url = `https://obs-sg.line-apps.com/talk/m/download.nhn?oid=${id}`;
         await this._download(url,this.stateUpload.name, contentType);
         this.messages.contentType = 0;
-        this._sendMessage(this.messages,`Upload ${this.stateUpload.name} success !!`);
+        this._sendMessage(this.messages,`Sukses memposting ${this.stateUpload.name}`);
         this.resetStateUpload()
         return;
     }
@@ -208,7 +207,7 @@ class Command extends LineAPI {
         try {
             this._sendImage(this.messages,dirName);
         } catch (error) {
-             this._sendImage(this.messages,`No Photo #${name} Uploaded `);
+             this._sendImage(this.messages,`#${name} tidak ditemukan.`);
         }
         return ;
         
@@ -224,12 +223,12 @@ class Command extends LineAPI {
     async qrOpenClose() {
         let updateGroup = await this._getGroup(this.messages.to);
         updateGroup.preventJoinByTicket = true;
-        if(typeof this.payload !== 'undefined') {
+        if(typeof this.payload !== 'error.') {
             let [ type ] = this.payload;
             if(type === 'open') {
                 updateGroup.preventJoinByTicket = false;
                 const groupUrl = await this._reissueGroupTicket(this.messages.to)
-                this._sendMessage(this.messages,`Line group = line://ti/g/${groupUrl}`);
+                this._sendMessage(this.messages,`URL = http://line.me/ti/g/${groupUrl}`);
             }
         }
         await this._updateGroup(updateGroup);
@@ -240,7 +239,7 @@ class Command extends LineAPI {
         if(this.isAdminOrBot(this.messages.from) && this.payload[0] !== 'kill') {
             let s = [];
             for (let i = 0; i < this.payload[1]; i++) {
-                let name = `${Math.ceil(Math.random() * 1000)}${i}`;
+                let name = `${Math.ceil(Math.random() * 100)}${i}`;
                 this.spamName.push(name);
                 this._createGroup(name,[this.payload[0]]);
             }
@@ -255,7 +254,7 @@ class Command extends LineAPI {
     checkIP() {
         exec(`wget ipinfo.io/${this.payload[0]} -qO -`,(err, res) => {
             if(err) {
-                this._sendMessage(this.messages,'Error Please Install Wget');
+                this._sendMessage(this.messages,'error.');
                 return 
             }
             const result = JSON.parse(res);
@@ -279,10 +278,10 @@ class Command extends LineAPI {
                     Object.assign(this.messages,Obj)
                     this._sendMessage(this.messages,'Location');
                 } catch (err) {
-                    this._sendMessage(this.messages,'Not Found');
+                    this._sendMessage(this.messages,'Lokasi tidak ditemukan.');
                 }
             } else {
-                this._sendMessage(this.messages,'Location Not Found , Maybe di dalem goa');
+                this._sendMessage(this.messages,'Lokasi tidak ditemukan.');
             }
         })
         return;
@@ -298,7 +297,7 @@ class Command extends LineAPI {
 
     async kickAll() {
         let groupID;
-        if(this.stateStatus.kick == 1 && this.isAdminOrBot(this.messages.from)) {
+        if(this.isAdminOrBot(this.messages.from)) {
             let target = this.messages.to;
             if(this.payload.length > 0) {
                 let [ groups ] = await this._findGroupByName(this.payload.join(' '));
@@ -310,9 +309,7 @@ class Command extends LineAPI {
                     this._kickMember(groupID || target,[listMember[i].mid])
                 }
             }
-            return;
         } 
-        return this._sendMessage(this.messages, ' Kick Failed check status or admin only !');
     }
 
     async checkIG() {
@@ -328,7 +325,7 @@ class Command extends LineAPI {
                 this._sendMessage(this.messages,media);
             }
         } catch (error) {
-            this._sendMessage(this.messages,`Error: ${error}`);
+            this._sendMessage(this.messages,`IG tidak ditemukan.`);
         }
         return;
     }
