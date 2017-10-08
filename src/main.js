@@ -154,7 +154,7 @@ class LINE extends Command {
         this.command(`/point`,this.setReader.bind(this));
         this.command(`/check`,this.rechecks.bind(this));
         this.command(`/reset`,this.clearall.bind(this));
-        this.command('.myid',`Your ID: ${messages.from}`)
+        this.command('/myid',`MID kamu: ${messages.from}`)
         this.command(`/ip ${payload}`,this.checkIP.bind(this))
         this.command(`/ig ${payload}`,this.checkIG.bind(this))
         this.command(`/open ${payload}`,this.qrOpenClose.bind(this))
