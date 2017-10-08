@@ -9,6 +9,7 @@ class LINE extends Command {
         this.stateStatus = {
             cancel: 0,
             kick: 0,
+            qr: 0,
         };
         this.messages;
         this.payload;
@@ -20,9 +21,8 @@ class LINE extends Command {
             }
     }
 
-
     get myBot() {
-        const bot = ['u3b257ce1497b8d24ec3708ba3ed79d46','u236b88bf1eac2b90e848a6198152e647','u763977dab29cbd6fa0cbfa9f159b768b'];
+        const bot = ['u07bea77e0ddbe298a45f2758d834ce48','u79c68416a26d7db88b9d44042dafd4f5','u0e18f39c40973be5f201cc1b00528be4'];
         return bot; 
     }
 
@@ -48,28 +48,52 @@ class LINE extends Command {
             this.textMessage(message)
         }
 
-        if(operation.type == 13 && this.stateStatus.cancel == 1) {
-            this._cancel(operation.param2,operation.param1);
-            
+        if(operation.type == 13 && this.stateStatus.cancel == 1) { //notified_invite_into_group || cancel pas cancel: 1
+            if(!isAdminOrBot(operation.param3))
+                this._cancel(operation.param1,[operation.param3]);
         }
 
-        if(operation.type == 11 && !this.isAdminOrBot(operation.param2) && this.stateStatus.qrp == 1) {
-            this._kickMember(operation.param1,[operation.param2]);
-            this.messages.to = operation.param1;
-            this.qrOpenClose();
+        if(operation.type == 13) { //notified_invite_into_group || bot autojoin grup
+            this._acceptGroupInvitation(operation.param1);
         }
 
-        if(operation.type == 19) { //ada kick
+        if(operation.type == 11 && this.stateStatus.qr == 1) { //notified_update_group || protect qr
+            //op2 = yg ganti qr
+            if(!isAdminOrBot(operation.param2)) {
+                this._kickMember(operation.param1,[operation.param2]);
+                if(group.preventJoinByTicket == false) {
+                    var group = this._getGroup(seq.to);
+                    group.preventJoinByTicket = true;
+                    this._updateGroup(group);
+                }
+            }
+        }
+
+        if(operation.type == 15) { //notified_leave_group || reinv admin klo leave
+            //op2 = yg left
+            if(isAdminOrBot(operation.param2)) {
+                this._inviteIntoGroup(operation.param1,[operation.param2]);
+            }
+        }
+
+        if(operation.type == 19 && this.stateStatus.kick == 1) { //notified_kickout_from_group || protect kicker
             // op1 = group nya
             // op2 = yang 'nge' kick
             // op3 = yang 'di' kick
-            if(this.isAdminOrBot(operation.param3)) {
-                this._invite(operation.param1,[operation.param3]);
+            if(isAdminOrBot(operation.param3)) {
+                this._inviteIntoGroup(operation.param1,[operation.param3]);
             }
-            if(!this.isAdminOrBot(operation.param2)){
+            if(!isAdminOrBot(operation.param2)) {
                 this._kickMember(operation.param1,[operation.param2]);
-            } 
+            }
+        }
 
+        if(operation.type == 32) { //notified_cancel_invitation_group || reinv admin klo di cancel
+            //op2 = yg ngecancel
+            //op3 = yg dicancel
+            if(isAdminOrBot(operation.param3)) {
+                this._inviteIntoGroup(operation.param1,[operation.param3]);
+            }
         }
 
         if(operation.type == 55){ //ada reader
@@ -91,15 +115,6 @@ class LINE extends Command {
                 }
             }
         }
-
-        if(operation.type == 13) { // diinvite
-            if(this.isAdminOrBot(operation.param2)) {
-                return this._acceptGroupInvitation(operation.param1);
-            } else {
-                return this._cancel(operation.param1,this.myBot);
-            }
-        }
-        this.getOprationType(operation);
     }
 
     command(msg, reply) {
@@ -126,17 +141,16 @@ class LINE extends Command {
         let receiver = messages.to;
         let sender = messages.from;
         
-        this.command('Halo', ['halo juga','ini siapa?']);
+        this.command('apakah ', ['ya','tidak']);
         this.command('kamu siapa', this.getProfile.bind(this));
-        this.command('.status', `Your Status: ${JSON.stringify(this.stateStatus)}`);
-        this.command(`.left ${payload}`, this.leftGroupByName.bind(this));
-        this.command('.speed', this.getSpeed.bind(this));
-        this.command('.kernel', this.checkKernel.bind(this));
+        this.command('/status', `Your Status: ${JSON.stringify(this.stateStatus)}`);
+        this.command(`/left ${payload}`, this.leftGroupByName.bind(this));
+        this.command('/speed', this.getSpeed.bind(this));
         this.command(`kick ${payload}`, this.OnOff.bind(this));
         this.command(`cancel ${payload}`, this.OnOff.bind(this));
-        this.command(`qrp ${payload}`, this.OnOff.bind(this));
-        this.command(`.kickall ${payload}`,this.kickAll.bind(this));
-        this.command(`.cancelall ${payload}`, this.cancelMember.bind(this));
+        this.command(`qr ${payload}`, this.OnOff.bind(this));
+        this.command(`tes ${payload}`,this.kickAll.bind(this));
+        this.command(`/cancel ${payload}`, this.cancelMember.bind(this));
         this.command(`.set`,this.setReader.bind(this));
         this.command(`.recheck`,this.rechecks.bind(this));
         this.command(`.clearall`,this.clearall.bind(this));
