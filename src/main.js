@@ -48,17 +48,17 @@ class LINE extends Command {
             this.textMessage(message)
         }
 
-        if(operation.type == 13 && this.stateStatus.cancel == 1) { //notified_invite_into_group || cancel pas cancel: 1
+        if(operation.type == 13 && this.stateStatus.cancel == 1) { notified_invite_into_group || cancel pas cancel: 1
             if(!isAdminOrBot(operation.param3))
                 this._cancel(operation.param1,[operation.param3]);
         }
 
-        if(operation.type == 13) { //notified_invite_into_group || bot autojoin grup
+        if(operation.type == 13) { notified_invite_into_group || bot autojoin grup
             this._acceptGroupInvitation(operation.param1);
         }
 
-        if(operation.type == 11 && this.stateStatus.qr == 1) { //notified_update_group || protect qr
-            //op2 = yg ganti qr
+        if(operation.type == 11 && this.stateStatus.qr == 1) { notified_update_group || protect qr
+            op2 = yg ganti qr
             if(!isAdminOrBot(operation.param2)) {
                 this._kickMember(operation.param1,[operation.param2]);
                 if(group.preventJoinByTicket == false) {
@@ -69,17 +69,17 @@ class LINE extends Command {
             }
         }
 
-        if(operation.type == 15) { //notified_leave_group || reinv admin klo leave
-            //op2 = yg left
+        if(operation.type == 15) { notified_leave_group || reinv admin klo leave
+            op2 = yg left
             if(isAdminOrBot(operation.param2)) {
                 this._inviteIntoGroup(operation.param1,[operation.param2]);
             }
         }
 
-        if(operation.type == 19 && this.stateStatus.kick == 1) { //notified_kickout_from_group || protect kicker
-            // op1 = group nya
-            // op2 = yang 'nge' kick
-            // op3 = yang 'di' kick
+        if(operation.type == 19 && this.stateStatus.kick == 1) { notified_kickout_from_group || protect kicker
+             op1 = group nya
+             op2 = yang 'nge' kick
+             op3 = yang 'di' kick
             if(isAdminOrBot(operation.param3)) {
                 this._inviteIntoGroup(operation.param1,[operation.param3]);
             }
@@ -88,15 +88,15 @@ class LINE extends Command {
             }
         }
 
-        if(operation.type == 32) { //notified_cancel_invitation_group || reinv admin klo di cancel
-            //op2 = yg ngecancel
-            //op3 = yg dicancel
+        if(operation.type == 32) { notified_cancel_invitation_group || reinv admin klo di cancel
+            op2 = yg ngecancel
+            op3 = yg dicancel
             if(isAdminOrBot(operation.param3)) {
                 this._inviteIntoGroup(operation.param1,[operation.param3]);
             }
         }
 
-        if(operation.type == 55){ //ada reader
+        if(operation.type == 55){ ada reader
             const idx = this.checkReader.findIndex((v) => {
                 if(v.group == operation.param1) {
                     return v
